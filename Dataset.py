@@ -37,6 +37,6 @@ class Dataset:
                         break
 
 
-db = Database("/Users/hp/workbench/projects/gmu/neural-network-poc/data/", "dataset")
-
+db = Dataset("/Users/hp/workbench/projects/gmu/neural-network-poc/data/", "dataset")
+db.split()
 db.join()
