@@ -22,7 +22,7 @@ class Dataset:
             for path, file in self.files(os.path.join(self._path, "split")):
                 with open(os.path.join(path, "split", file), 'r') as data_file:
                     for line in data_file:
-                        join_file.writelines("%s,%s\n" % (file, ','.join(line.split())))
+                        join_file.writelines("%s,%s\n" % (file, ','.join(line.split()[0:5])))
 
     def split(self):
         split_len = 100
