@@ -38,7 +38,7 @@ class Dataset:
                 for line in fp:
                     new_file.write(line)
                     ctr += 1
-                    if self._split_len > 0 & self._split_len < ctr:
+                    if 0 < self._split_len < ctr:
                         break
 
     def split_by_percent(self):
@@ -57,19 +57,19 @@ class Dataset:
             for path, file in self.files(os.path.join(self._path, "split")):
                 with open(os.path.join(path, "split", file), 'r') as data_file:
                     ctr = 0
-                    x = []
+                    x_vector = []
                     for line in data_file:
-                        if ctr % self._dataset_percent == 0:
-                            x.append(line.split())
-                            if len(x) >= vector_size:
-                                join_file.writelines("%s,%s\n" % (file, ','.join(x)))
-                                x = []
-                        ctr += 1
+                        x_vector += line.split()
+                        print(x_vector)
+                        if len(x_vector) >= vector_size:
+                            join_file.writelines("%s,%s\n" % (file, ','.join(x_vector[:vector_size])))
+                            x_vector = x_vector[vector_size:]
+                    ctr += 1
         pass
 
 
 db = Dataset("/Users/hp/workbench/projects/gmu/neural-network-poc/data/", "dataset")
 # db.split()
-db.split_by_percent()
+# db.split_by_percent()
 # db.join()
-# db.join_by_vector_size(64)
+db.join_by_vector_size(64)

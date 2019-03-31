@@ -12,7 +12,7 @@ class NNKeras:
         self._path = path
         self._file = file
 
-    def prepare(self):
+    def train_test_split(self):
         dataset = pd.read_csv(os.path.join(self._path, self._file), header=None)
 
         X = dataset[:, 1, 3]
