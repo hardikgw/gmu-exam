@@ -1,10 +1,7 @@
 import os
-import numpy as np
 import pandas as pd
-
+import numpy as np
 from sklearn.model_selection import train_test_split
-import sklearn.preprocessing as pp
-
 from sklearn.neural_network import MLPClassifier
 
 
@@ -20,16 +17,16 @@ class NNSkLearn:
         y = df.iloc[:, 0]
         return X, y
 
-    def train(self, X, y):
-        le = pp.LabelEncoder
+    def train(self):
+        X, y = self.read_data()
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
-
-        y = y.apply(le.fit_transform)
+        clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=1, random_state=1)
+        clf.fit(X_train, y_train)
+        score = clf.score(X_test, y_test)
         print(y.unique())
-        print(y_test.unique())
-        print(y_train.unique())
+        print(score)
+        return score
 
 
 nn = NNSkLearn("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset", "dataset64.csv")
-X, y = nn.read_data()
-nn.train(X, y)
+nn.train()

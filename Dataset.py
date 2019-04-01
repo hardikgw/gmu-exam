@@ -60,9 +60,9 @@ class Dataset:
                     x_vector = []
                     for line in data_file:
                         x_vector += line.split()
-                        print(x_vector)
                         if len(x_vector) >= vector_size:
-                            join_file.writelines("%s,%s\n" % (file, ','.join(x_vector[:vector_size])))
+                            join_file.writelines(
+                                "%s,%s\n" % ((os.path.splitext(file)[0]), ','.join(x_vector[:vector_size])))
                             x_vector = x_vector[vector_size:]
                     ctr += 1
         pass
