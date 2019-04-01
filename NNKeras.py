@@ -46,17 +46,9 @@ class NNKeras:
 
     def train(self):
         X, y, unique_classes = self.read_data()
-        print(y)
-        # classes_idx = classes.class_indices
-        # encoder = LabelEncoder()
-        # encoder.fit(y)
-        # encoded_Y = encoder.transform(y)
-        # # convert integers to dummy variables (i.e. one hot encoded)
-        # dummy_y = np_utils.to_categorical(encoded_Y)
-        # print(dummy_y)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
         model = self.base_model()
-        model.fit(X_train, y_train, epochs=200)
+        model.fit(X_train, y_train, epochs=20)
 
 
 nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset", "dataset64.csv")
