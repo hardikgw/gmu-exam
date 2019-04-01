@@ -11,22 +11,14 @@ class NNKeras:
     def __init__(self, path: str, file: str):
         self._path = path
         self._file = file
+        self._num_cols = 64
 
-    def train_test_split(self):
-        dataset = pd.read_csv(os.path.join(self._path, self._file), header=None)
-
-        X = dataset[:, 1, 3]
-        y = dataset[:, 1]
-
-        print(X)
-        print(y)
-
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
-        # print(dataset.head(2000)
-
-        model = Sequential()
-        model.add(Dense(1, activation='relu', input_shape=(1,)))
+    def read_split_data(self):
+        df = pd.read_csv(os.path.join(self._path, self._file), header=None)
+        X = df.iloc[:, 1:]
+        y = df.iloc[:, 0]
+        return train_test_split(X, y, test_size=0.33)
 
 
-train = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset", "dataset")
-train.prepare()
+train = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset", "dataset.csv")
+print(train.read_split_data())
