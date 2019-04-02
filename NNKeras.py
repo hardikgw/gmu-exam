@@ -33,13 +33,13 @@ class NNKeras:
             y[i, col_idx] = True
         return X, y, unique_classes
 
-    def base_model(self, nodes):
+    def base_model(self, nodes, num_output=31):
         model = Sequential()
 
         for prev_node, node in zip(nodes[:-1], nodes[1:]):
             model.add(Dense(node, activation='relu', input_dim=prev_node))  # Add the first hidden layer
 
-        model.add(Dense(31, activation='sigmoid'))  # Add the output layer
+        model.add(Dense(num_output, activation='sigmoid'))  # Add the output layer
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
         return model
 
@@ -58,14 +58,59 @@ class NNKeras:
             print('Test loss:', score[0])
             print('Test accuracy:', score[1])
 
+    def train3(self, X, y):
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, random_state=5)
+        plot_losses = TrainingPlot()
+        time_summary = TimeSummary()
+        P = 6
+        for num_layers in range(1, 10):
+            nodes = [64] + [int(P / 2)] * num_layers
+            model = self.base_model(nodes)
+            # callbacks = [self._call_back, time_summary, plot_losses, self._call_back_model]
+            callbacks = [time_summary]
+            summary = model.fit(X_train, y_train, epochs=10, verbose=0, callbacks=callbacks)
+            score = model.evaluate(X_test, y_test)
+            plot_training_summary(summary, time_summary, "Nodes=" + str(P))
+            print('Test loss:', score[0])
+            print('Test accuracy:', score[1])
+
+    def train4(self, X, y):
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, random_state=5)
+        plot_losses = TrainingPlot()
+        time_summary = TimeSummary()
+        for P in range(2, 12):
+            for num_layers in range(1, 5):
+                nodes = [64] + [int(P / 2)] * num_layers
+                model = self.base_model(nodes)
+                # callbacks = [self._call_back, time_summary, plot_losses, self._call_back_model]
+                callbacks = [time_summary]
+                summary = model.fit(X_train, y_train, epochs=10, verbose=0, callbacks=callbacks)
+                score = model.evaluate(X_test, y_test)
+                plot_training_summary(summary, time_summary, "Nodes=" + str(P))
+                print('Test loss:', score[0])
+                print('Test accuracy:', score[1])
+
+    def train5(self, X, y):
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, random_state=5)
+        plot_losses = TrainingPlot()
+        time_summary = TimeSummary()
+        num_nodes = 6
+        nodes = [64, num_nodes]
+        model = self.base_model(nodes, 1)
+        # callbacks = [self._call_back, time_summary, plot_losses, self._call_back_model]
+        callbacks = [time_summary]
+        summary = model.fit(X_train, y_train, epochs=10, verbose=0, callbacks=callbacks)
+        score = model.evaluate(X_test, y_test)
+        plot_training_summary(summary, time_summary, "Nodes=" + str(num_nodes))
+        print('Test loss:', score[0])
+        print('Test accuracy:', score[1])
+        return score[1]
+
 
 nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset.csv")
 X, y, unique_classes = nn.read_data()
 
-# Problem 1
-# nn.train(X, y)
-
-# Problem 2
-P = 6
-for num_layers in range(0, 10):
-    nodes = [64] + [P / 2] * num_layers
+Ys = []
+accuracy = []
+for i, y in enumerate(Ys):
+    accuracy.append(nn.train5(X, y))
