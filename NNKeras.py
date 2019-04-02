@@ -50,7 +50,7 @@ class NNKeras:
         for num_nodes in range(2, 35):
             nodes = [64, num_nodes]
             model = self.base_model(nodes)
-            callbacks = [self._call_back, time_summary, plot_losses, self._call_back_model]
+            # callbacks = [self._call_back, time_summary, plot_losses, self._call_back_model]
             callbacks = [time_summary]
             summary = model.fit(X_train, y_train, epochs=10, verbose=0, callbacks=callbacks)
             score = model.evaluate(X_test, y_test)
@@ -59,12 +59,13 @@ class NNKeras:
             print('Test accuracy:', score[1])
 
 
-
-
-# P = 6
-# for num_layers in range(0,10):
-#   nodes = [64] + [P/2]*num_layers
-#
 nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset.csv")
 X, y, unique_classes = nn.read_data()
-nn.train(X, y)
+
+# Problem 1
+# nn.train(X, y)
+
+# Problem 2
+P = 6
+for num_layers in range(0, 10):
+    nodes = [64] + [P / 2] * num_layers
