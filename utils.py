@@ -73,5 +73,5 @@ def plot_training_summary(training_summary, time_summary=None, text=""):
             plt.plot(epochs, val0[1], '--', marker='o')
         plt.xlabel('epoch'), plt.ylabel(val0[0])
         plt.legend(('Train set', 'Validation set'))
-        plt.text(.2, .1, text, va='center', size=12)
+        plt.text(.15, .1, text, va='center', size=12)
         plt.show()
