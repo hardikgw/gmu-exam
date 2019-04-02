@@ -1,3 +1,2 @@
 #!/usr/bin/env bash
-#!/usr/bin/env bash
-docker run -it -p 8888:8888 -p 6006:6006 --name=tensorflow -v $(pwd)/notebooks:/notebooks -v $(pwd)/logs:/logs -v $(pwd)/models:/models -e PASSWORD=password cithub/tensorflow
+docker run -it -p 8888:8888 -p 6006:6006 --name=tensorflow -v $(pwd)/notebooks:/tf/notebooks -v $(pwd)/data/dataset:/tf/dataset $(pwd)/logs:/tf/logs -v $(pwd)/models:/tf/models -e PASSWORD=password tensorflow/tensorflow:latest-py3-jupyter
