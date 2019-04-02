@@ -1,5 +1,6 @@
 # Custom
 events.out*
+*.ckpt
 
 # General
 .DS_Store
