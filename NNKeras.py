@@ -13,8 +13,12 @@ class NNKeras:
     def __init__(self, url: str):
         self._url = url
         self._num_cols = 64
-        self._call_back = TensorBoard(log_dir='../logs', histogram_freq=0, batch_size=32, write_graph=True, write_grads=False, write_images=False, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None, embeddings_data=None, update_freq='epoch')
-        self._call_back_model = ModelCheckpoint('../logs/model.ckpt', monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=1)
+        self._call_back = TensorBoard(log_dir='../logs', histogram_freq=0, batch_size=32, write_graph=True,
+                                      write_grads=False, write_images=False, embeddings_freq=0,
+                                      embeddings_layer_names=None, embeddings_metadata=None, embeddings_data=None,
+                                      update_freq='epoch')
+        self._call_back_model = ModelCheckpoint('../logs/model.ckpt', monitor='val_loss', verbose=0,
+                                                save_best_only=False, save_weights_only=False, mode='auto', period=1)
 
     def read_data(self):
         df = pd.read_csv(self._url, header=None)
@@ -43,17 +47,24 @@ class NNKeras:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, random_state=5)
         plot_losses = TrainingPlot()
         time_summary = TimeSummary()
-        for num_nodes in range(2, 100):
+        for num_nodes in range(2, 35):
             nodes = [64, num_nodes]
             model = self.base_model(nodes)
-            summary = model.fit(X_train, y_train, epochs=10, verbose=0,
-                                callbacks=[self._call_back, time_summary, plot_losses, self._call_back_model])
+            callbacks = [self._call_back, time_summary, plot_losses, self._call_back_model]
+            callbacks = [time_summary]
+            summary = model.fit(X_train, y_train, epochs=10, verbose=0, callbacks=callbacks)
             score = model.evaluate(X_test, y_test)
-            plot_training_summary(summary, time_summary)
+            plot_training_summary(summary, time_summary, "Nodes=" + str(num_nodes))
             print('Test loss:', score[0])
             print('Test accuracy:', score[1])
 
 
+
+
+# P = 6
+# for num_layers in range(0,10):
+#   nodes = [64] + [P/2]*num_layers
+#
 nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset.csv")
 X, y, unique_classes = nn.read_data()
 nn.train(X, y)
