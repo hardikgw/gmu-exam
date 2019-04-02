@@ -1,3 +1,6 @@
+# Custom
+events.out*
+
 # General
 .DS_Store
 .AppleDouble
