@@ -7,7 +7,7 @@ class Dataset:
         self._directory = directory
         self.__filename = "dataset"
         self.__extension = ".csv"
-        self._split_len = -1
+        self._split_len = 500
         self._dataset_percent = 5
 
     def files(self, path: str) -> [str, str]:
@@ -27,21 +27,34 @@ class Dataset:
                     ctr = 0
                     for line in data_file:
                         if ctr % self._dataset_percent == 0:
-                            join_file.writelines("%s,%s\n" % (file, ','.join(line.split())))
+                            join_file.writelines("%s,%s\n" % (os.path.splitext(file)[0].upper(), ','.join(line.split())))
                         ctr += 1
 
-    def split(self):
-        for path, file in self.files(self._path):
+    def split(self, fix_folder: str):
+        for path, file in self.files(self._path + fix_folder):
             new_file = self.create(os.path.join(path, "split"), file)
             ctr = 0
-            with open(os.path.join(path, file), "r") as fp:
+            with open(os.path.join(path, fix_folder, file), "r") as fp:
                 for line in fp:
                     new_file.write(line)
                     ctr += 1
                     if 0 < self._split_len < ctr:
                         break
 
-    def split_by_percent(self):
+    def fix_by_vector_size(self, vector_size):
+        for path, file in self.files(self._path):
+            new_file = self.create(os.path.join(path, "fix"), os.path.splitext(file)[0] + self.__extension)
+            with open(os.path.join(path, file), "r") as fp:
+                x_vector = []
+                ctr = 0
+                for line in fp:
+                    x_vector += line.split()
+                    if len(x_vector) >= vector_size:
+                        new_file.writelines("%s\n" % (','.join(x_vector[:vector_size])))
+                        x_vector = x_vector[vector_size:]
+                ctr += 1
+
+    def split_by_percent(self, fix_folder: str):
         for path, file in self.files(self._path):
             new_file = self.create(os.path.join(path, "split"), file)
             ctr = 0
@@ -69,7 +82,8 @@ class Dataset:
 
 
 db = Dataset("/Users/hp/workbench/projects/gmu/neural-network-poc/data/", "dataset")
-# db.split()
+# db.fix_by_vector_size(64)  # Reads file with ignoring new line char concatenating elements specified as vector_size
+# db.split("fix") # Splits number of lines defined in constant self._split_len into new folder called split from specified folder as parameter from current folder
 # db.split_by_percent()
-# db.join()
-db.join_by_vector_size(64)
+db.join()
+# db.join_by_vector_size(64)

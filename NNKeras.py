@@ -31,25 +31,27 @@ class NNKeras:
             y[i, col_idx] = True
         return X, y, unique_classes
 
-    def base_model(self):
+    def base_model(self, nodes):
         model = Sequential()
-        # Add the first hidden layer
-        model.add(Dense(32, activation='relu', input_dim=64))
-        # Add the second hidden layer
-        model.add(Dense(16, activation='relu'))
-        # Add the output layer
-        model.add(Dense(31, activation='sigmoid'))
-        # Compile the model
+
+        for prev_node, node in zip(nodes[:-1], nodes[1:]):
+            model.add(Dense(node, activation='relu', input_dim=prev_node))  # Add the first hidden layer
+
+        model.add(Dense(31, activation='sigmoid'))  # Add the output layer
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-        # Train the model for 200 epochs
         return model
 
     def train(self):
         X, y, unique_classes = self.read_data()
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
-        model = self.base_model()
-        model.fit(X_train, y_train, epochs=20)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, random_state=5)
+
+        for num_nodes in range(2, 100):
+            nodes = [64, num_nodes]
+            model = self.base_model(nodes)
+            model.fit(X_train, y_train, epochs=1, verbose=0)
+            loss, accuracy = model.evaluate(X_test, y_test)
+            print(num_nodes, accuracy)
 
 
-nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset", "dataset64.csv")
+nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset", "dataset.csv")
 nn.train()
