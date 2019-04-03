@@ -12,7 +12,7 @@ from utils import plot_training_summary
 class NNKeras:
     def __init__(self, url: str):
         self._url = url
-        self._num_cols = 64
+        self._num_cols = 31
         self._call_back = TensorBoard(log_dir='../logs', histogram_freq=0, batch_size=32, write_graph=True,
                                       write_grads=False, write_images=False, embeddings_freq=0,
                                       embeddings_layer_names=None, embeddings_metadata=None, embeddings_data=None,
@@ -90,27 +90,25 @@ class NNKeras:
                 print('Test loss:', score[0])
                 print('Test accuracy:', score[1])
 
-    def train5(self, X, y):
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, random_state=5)
-        plot_losses = TrainingPlot()
-        time_summary = TimeSummary()
-        num_nodes = 6
-        nodes = [64, num_nodes]
-        model = self.base_model(nodes, 1)
-        # callbacks = [self._call_back, time_summary, plot_losses, self._call_back_model]
-        callbacks = [time_summary]
-        summary = model.fit(X_train, y_train, epochs=10, verbose=0, callbacks=callbacks)
-        score = model.evaluate(X_test, y_test)
-        plot_training_summary(summary, time_summary, "Nodes=" + str(num_nodes))
-        print('Test loss:', score[0])
-        print('Test accuracy:', score[1])
-        return score[1]
+    def single_output_score(self, X, y):
+        total_score = 0
+        for y_i in range(self._num_cols - 1):
+            X_train, X_test, y_train, y_test = train_test_split(X, y[:, y_i], test_size=0.05, random_state=5)
+            num_nodes = 6
+            nodes = [64, num_nodes]
+            model = self.base_model(nodes, 1)
+            summary = model.fit(X_train, y_train, epochs=10, verbose=0)
+            score = model.evaluate(X_test, y_test)
+            print('Test loss:', score[0])
+            print('Test accuracy:', score[1])
+            total_score += score[1]
+        return total_score / self._num_cols
 
 
 nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset.csv")
-X, y, unique_classes = nn.read_data()
+X, y, classes = nn.read_data()
 
-Ys = []
-accuracy = []
-for i, y in enumerate(Ys):
-    accuracy.append(nn.train5(X, y))
+# Use binary classification method
+
+avg_score = nn.single_output_score(X, y)
+print("Average accuracy:", avg_score)
