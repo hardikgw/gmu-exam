@@ -58,35 +58,40 @@ class NNKeras:
             print('Test loss:', score[0])
             print('Test accuracy:', score[1])
 
-    def train3(self, X, y):
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, random_state=5)
+    def train_with_callback(self, X, y):
         plot_losses = TrainingPlot()
         time_summary = TimeSummary()
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=5)
+        for num_nodes in range(31, 32):
+            nodes = [64, num_nodes]
+            model = self.base_model(nodes)
+            summary = model.fit(X_train, y_train, epochs=10, verbose=0, callbacks=callbacks)
+            score = model.evaluate(X_test, y_test)
+            plot_training_summary(summary, time_summary)
+            score = model.evaluate(X_test, y_test)
+            model.save(self._model)
+            print('Test loss:', score[0])
+            print('Test accuracy:', score[1])
+
+    def train3(self, X, y):
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, random_state=5)
         P = 6
         for num_layers in range(1, 10):
             nodes = [64] + [int(P / 2)] * num_layers
             model = self.base_model(nodes)
-            # callbacks = [self._call_back, time_summary, plot_losses, self._call_back_model]
-            callbacks = [time_summary]
-            summary = model.fit(X_train, y_train, epochs=10, verbose=0, callbacks=callbacks)
+            summary = model.fit(X_train, y_train, epochs=10, verbose=0)
             score = model.evaluate(X_test, y_test)
-            plot_training_summary(summary, time_summary, "Nodes=" + str(P))
             print('Test loss:', score[0])
             print('Test accuracy:', score[1])
 
     def train4(self, X, y):
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, random_state=5)
-        plot_losses = TrainingPlot()
-        time_summary = TimeSummary()
         for P in range(2, 12):
             for num_layers in range(1, 5):
                 nodes = [64] + [int(P / 2)] * num_layers
                 model = self.base_model(nodes)
-                # callbacks = [self._call_back, time_summary, plot_losses, self._call_back_model]
-                callbacks = []
-                summary = model.fit(X_train, y_train, epochs=10, verbose=0, callbacks=callbacks)
+                summary = model.fit(X_train, y_train, epochs=10, verbose=0)
                 score = model.evaluate(X_test, y_test)
-                plot_training_summary(summary, time_summary, "Nodes=" + str(P))
                 print('Test loss:', score[0])
                 print('Test accuracy:', score[1])
 
@@ -110,7 +115,7 @@ class NNKeras:
             for i, line in enumerate(fp):
                 predict_vector = np.array(line.split(",")).astype(float).reshape(1, 64)
                 prediction = model.predict_classes(predict_vector)
-                print(prediction, classes[0][prediction])
+                print(prediction, classes[0].values[prediction])
                 if i > num_lines:
                     break
 

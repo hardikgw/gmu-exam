@@ -55,7 +55,7 @@ class TimeSummary(Callback):
         self.epoch_times.append(time.process_time() - self.epoch_time_start)
 
 
-def plot_training_summary(training_summary, time_summary=None, text=""):
+def plot_training_summary(training_summary, time_summary=None):
     if time_summary:
         print('Training time: ' + str(timedelta(seconds=time_summary.training_time)))
         print('Epoch time avg: ' + str(timedelta(seconds=mean(time_summary.epoch_times))))
@@ -73,5 +73,4 @@ def plot_training_summary(training_summary, time_summary=None, text=""):
             plt.plot(epochs, val0[1], '--', marker='o')
         plt.xlabel('epoch'), plt.ylabel(val0[0])
         plt.legend(('Train set', 'Validation set'))
-        plt.text(.15, .1, text, va='center', size=12)
         plt.show()
