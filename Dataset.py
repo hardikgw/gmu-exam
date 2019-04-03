@@ -57,14 +57,16 @@ class Dataset:
                 ctr += 1
 
     def split_by_percent(self, fix_folder: str):
-        for path, file in self.files(self._path):
+        for path, file in self.files(self._path + fix_folder):
             new_file = self.create(os.path.join(path, "split"), file)
             ctr = 0
-            with open(os.path.join(path, file), "r") as fp:
+            with open(os.path.join(path, fix_folder, file), "r") as fp:
                 for line in fp:
                     if ctr % self._dataset_percent == 0:
                         new_file.write(line)
                     ctr += 1
+                    if ctr > self._split_len:
+                        break
 
     def join_by_vector_size(self, vector_size: int):
         filename = self.__filename + str(vector_size) + self.__extension
@@ -86,6 +88,6 @@ class Dataset:
 db = Dataset("/Users/hp/workbench/projects/gmu/neural-network-poc/data/", "dataset")
 # db.fix_by_vector_size(64)  # Reads file with ignoring new line char concatenating elements specified as vector_size
 # db.split("fix") # Splits number of lines defined in constant self._split_len into new folder called split from specified folder as parameter from current folder
-# db.split_by_percent()
+# db.split_by_percent("fix")
 db.join("fix")
 # db.join_by_vector_size(64)
