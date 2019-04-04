@@ -136,10 +136,10 @@ class NNKeras:
 
 #
 #
-nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset.csv")
+# nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset.csv")
 #
-X, y, classes = nn.read_data()
-nn.train_with_callback(X, y)
+# X, y, classes = nn.read_data()
+# nn.train_with_callback(X, y)
 # nn.predict("/Users/hp/workbench/projects/gmu/neural-network-poc/data/fix/AE002161.csv", classes)
 #
 # # Use binary classification method
