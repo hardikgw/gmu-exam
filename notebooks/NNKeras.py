@@ -50,14 +50,15 @@ class NNKeras:
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
         return model
 
-    def train(self, X, y, node_range):
+    def train(self, X, y, node_range, show_summary: bool = False):
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=5)
         for num_nodes in node_range:
             nodes = [64, num_nodes]
             model = self.base_model(nodes)
-            summary = model.fit(X_train, y_train, epochs=100, verbose=0)
+            summary = model.fit(X_train, y_train, epochs=10, verbose=0)
             score = model.evaluate(X_test, y_test)
-            model.summary()
+            if show_summary:
+                model.summary()
             print('Test loss:', score[0])
             print('Test accuracy:', score[1])
 
@@ -85,7 +86,7 @@ class NNKeras:
         for num_layers in range(1, 10):
             nodes = [64] + [int(P / 2)] * num_layers
             model = self.base_model(nodes)
-            summary = model.fit(X_train, y_train, epochs=100, verbose=0)
+            summary = model.fit(X_train, y_train, epochs=10, verbose=0)
             score = model.evaluate(X_test, y_test)
             print('Test loss:', score[0])
             print('Test accuracy:', score[1])
@@ -96,7 +97,7 @@ class NNKeras:
             for num_layers in range(1, 5):
                 nodes = [64] + [int(P / 2)] * num_layers
                 model = self.base_model(nodes)
-                summary = model.fit(X_train, y_train, epochs=100, verbose=0)
+                summary = model.fit(X_train, y_train, epochs=10, verbose=0)
                 score = model.evaluate(X_test, y_test)
                 print('Test loss:', score[0])
                 print('Test accuracy:', score[1])
