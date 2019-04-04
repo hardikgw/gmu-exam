@@ -72,7 +72,8 @@ class NNKeras:
             nodes = [64, num_nodes]
             model = self.base_model(nodes)
             callbacks = [self._call_back, time_summary, plot_losses, self._call_back_model]
-            summary = model.fit(X_train, y_train, epochs=200, verbose=0, callbacks=callbacks)
+            summary = model.fit(X_train, y_train, epochs=200, verbose=0, validation_data=(X_test, y_test),
+                                callbacks=callbacks)
             score = model.evaluate(X_test, y_test)
             plot_training_summary(summary, time_summary)
             score = model.evaluate(X_test, y_test)
@@ -132,11 +133,10 @@ class NNKeras:
 
 #
 #
-# nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset.csv")
+nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset.csv")
 #
-# X, y, classes = nn.read_data()
-# print(classes)
-# # nn.train(X, y)
+X, y, classes = nn.read_data()
+nn.train_with_callback(X, y)
 # nn.predict("/Users/hp/workbench/projects/gmu/neural-network-poc/data/fix/AE002161.csv", classes)
 #
 # # Use binary classification method
