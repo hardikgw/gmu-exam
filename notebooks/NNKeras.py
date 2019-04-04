@@ -11,6 +11,7 @@ from keras.models import load_model
 import warnings
 
 warnings.filterwarnings('ignore')
+from keras.regularizers import l2
 
 
 class NNKeras:
@@ -40,11 +41,13 @@ class NNKeras:
             y[i, col_idx] = True
         return X, y, unique_classes
 
-    def base_model(self, nodes, num_output=31):
+    def base_model(self, nodes, num_output=31, kernel_regularizer=l2(1e-5)):
         model = Sequential()
-
+        kernel_regularizer = None
         for prev_node, node in zip(nodes[:-1], nodes[1:]):
-            model.add(Dense(node, activation='relu', input_dim=prev_node))  # Add the first hidden layer
+            # model.add(Dense(node, activation='relu', input_dim=prev_node))  # Add the first hidden layer
+            model.add(Dense(node, activation='relu', kernel_regularizer=kernel_regularizer,
+                            input_dim=prev_node))  # Add the first hidden layer
 
         model.add(Dense(num_output, activation='sigmoid'))  # Add the output layer
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
