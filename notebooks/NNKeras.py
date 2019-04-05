@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import os
 from keras.callbacks import TensorBoard, ModelCheckpoint
 from keras.layers import Dense
 from keras.models import Sequential
@@ -18,12 +19,7 @@ class NNKeras:
         self._num_cols = 64
         self._num_classes = 31
         self._model = "../models/model.h5"
-        self._call_back = TensorBoard(log_dir='../logs', histogram_freq=0, batch_size=32, write_graph=True,
-                                      write_grads=False, write_images=False, embeddings_freq=0,
-                                      embeddings_layer_names=None, embeddings_metadata=None, embeddings_data=None,
-                                      update_freq='epoch')
-        self._call_back_model = ModelCheckpoint('../logs/model.ckpt', monitor='val_loss', verbose=0,
-                                                save_best_only=False, save_weights_only=False, mode='auto', period=1)
+        self._log_dir = "../logs"
 
     def read_data(self):
         df = pd.read_csv(self._url, header=None)
@@ -38,15 +34,13 @@ class NNKeras:
             y[i, col_idx] = True
         return X, y, unique_classes
 
-    def base_model(self, nodes, num_output=31, kernel_regularizer=l2(1e-5)):
+    def base_model(self, nodes, num_output=31, kernel_regularizer=None):
         model = Sequential()
-        kernel_regularizer = None
         for prev_node, node in zip(nodes[:-1], nodes[1:]):
-            # model.add(Dense(node, activation='relu', input_dim=prev_node))  # Add the first hidden layer
+            # model.add(Dense(node, activation='relu', input_dim=prev_node))
             model.add(Dense(node, activation='relu', kernel_regularizer=kernel_regularizer,
-                            input_dim=prev_node))  # Add the first hidden layer
-
-        model.add(Dense(num_output, activation='sigmoid'))  # Add the output layer
+                            input_dim=prev_node, name='features_' + str(node)))
+        model.add(Dense(num_output, activation='sigmoid', name='features'))
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
         return model
 
@@ -68,11 +62,20 @@ class NNKeras:
         plot_losses = TrainingPlot()
         time_summary = TimeSummary()
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=5)
+        with open(os.path.join(self._log_dir, 'metadata.tsv'), 'w') as f:
+            np.savetxt(f, y_test)
+        tensorboard = TensorBoard(log_dir=self._log_dir, histogram_freq=2, batch_size=32,
+                                  write_graph=True,
+                                  write_grads=False, write_images=True, embeddings_freq=1,
+                                  embeddings_layer_names=['features'],
+                                  embeddings_metadata='metadata.tsv',
+                                  embeddings_data=X_test,
+                                  update_freq='epoch')
+        callbacks = [tensorboard, time_summary, plot_losses]
         for num_nodes in range(31, 32):
             nodes = [64, num_nodes]
             model = self.base_model(nodes)
-            callbacks = [self._call_back, time_summary, plot_losses, self._call_back_model]
-            summary = model.fit(X_train, y_train, epochs=200, verbose=0, validation_data=(X_test, y_test),
+            summary = model.fit(X_train, y_train, epochs=100, verbose=0, validation_data=(X_test, y_test),
                                 callbacks=callbacks)
             score = model.evaluate(X_test, y_test)
             plot_training_summary(summary, time_summary)
@@ -131,15 +134,9 @@ class NNKeras:
                     break
 
 
-#
-#
-# nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset.csv")
-#
-# X, y, classes = nn.read_data()
-# nn.train_with_callback(X, y)
+nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset.csv")
+X, y, classes = nn.read_data()
+nn.train_with_callback(X, y, "../logs/model_1.ckpt")
 # nn.predict("/Users/hp/workbench/projects/gmu/neural-network-poc/data/fix/AE002161.csv", classes)
-#
-# # Use binary classification method
-#
 # # avg_score = nn.single_output_score(X, y)
 # # print("Average accuracy:", avg_score)
