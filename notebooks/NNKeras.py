@@ -138,9 +138,9 @@ class NNKeras:
                     break
 
 
-nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset1.csv")
-X, y, classes = nn.read_data()
-nn.train_with_callback(X, y, "../logs/model_1.ckpt", False)
+# nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset1.csv")
+# X, y, classes = nn.read_data()
+# nn.train_with_callback(X, y, "../logs/model_1.ckpt", False)
 # nn.predict("/Users/hp/workbench/projects/gmu/neural-network-poc/data/fix/AE002161.csv", classes)
 # # avg_score = nn.single_output_score(X, y)
 # # print("Average accuracy:", avg_score)

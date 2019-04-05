@@ -1,6 +1,5 @@
 # Custom
-events.out*
-*.ckpt
+logs
 
 # General
 .DS_Store
