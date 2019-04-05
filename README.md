@@ -1,1 +1,7 @@
-87676e00f24c36f2cc288112957120a1dbc41aea196a3e0f
+#  Neural Network with Keras
+
+### Steps to run:
+
+- Install virtualenv
+- source env/bin/activate
+- pip install -r requirements
