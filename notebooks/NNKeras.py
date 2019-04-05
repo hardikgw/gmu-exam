@@ -20,6 +20,7 @@ class NNKeras:
         self._num_classes = 31
         self._model = "../models/model.h5"
         self._log_dir = "../logs"
+        self.layer_names = ['features']
 
     def read_data(self):
         df = pd.read_csv(self._url, header=None)
@@ -38,6 +39,7 @@ class NNKeras:
         model = Sequential()
         for prev_node, node in zip(nodes[:-1], nodes[1:]):
             # model.add(Dense(node, activation='relu', input_dim=prev_node))
+            self.layer_names.append('features_' + str(node))
             model.add(Dense(node, activation='relu', kernel_regularizer=kernel_regularizer,
                             input_dim=prev_node, name='features_' + str(node)))
         model.add(Dense(num_output, activation='sigmoid', name='features'))
@@ -56,7 +58,7 @@ class NNKeras:
             print('Test loss:', score[0])
             print('Test accuracy:', score[1])
 
-    def train_with_callback(self, X, y, model_file: str = None):
+    def train_with_callback(self, X, y, model_file: str = None, generate_plots=True):
         if model_file is None:
             model_file = self._model
         plot_losses = TrainingPlot()
@@ -67,18 +69,20 @@ class NNKeras:
         tensorboard = TensorBoard(log_dir=self._log_dir, histogram_freq=2, batch_size=32,
                                   write_graph=True,
                                   write_grads=False, write_images=True, embeddings_freq=1,
-                                  embeddings_layer_names=['features'],
-                                  embeddings_metadata='metadata.tsv',
+                                  embeddings_layer_names=self.layer_names,
                                   embeddings_data=X_test,
                                   update_freq='epoch')
-        callbacks = [tensorboard, time_summary, plot_losses]
+        callbacks = [tensorboard, time_summary]
+        if generate_plots:
+            callbacks.append(plot_losses)
         for num_nodes in range(31, 32):
             nodes = [64, num_nodes]
             model = self.base_model(nodes)
             summary = model.fit(X_train, y_train, epochs=100, verbose=0, validation_data=(X_test, y_test),
                                 callbacks=callbacks)
             score = model.evaluate(X_test, y_test)
-            plot_training_summary(summary, time_summary)
+            if generate_plots:
+                plot_training_summary(summary, time_summary)
             score = model.evaluate(X_test, y_test)
             model.save(model_file)
             print('Test loss:', score[0])
@@ -134,9 +138,9 @@ class NNKeras:
                     break
 
 
-nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset.csv")
+nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset1.csv")
 X, y, classes = nn.read_data()
-nn.train_with_callback(X, y, "../logs/model_1.ckpt")
+nn.train_with_callback(X, y, "../logs/model_1.ckpt", False)
 # nn.predict("/Users/hp/workbench/projects/gmu/neural-network-poc/data/fix/AE002161.csv", classes)
 # # avg_score = nn.single_output_score(X, y)
 # # print("Average accuracy:", avg_score)
