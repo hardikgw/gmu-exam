@@ -8,9 +8,6 @@ from utils import TrainingPlot
 from utils import TimeSummary
 from utils import plot_training_summary
 from keras.models import load_model
-import warnings
-
-warnings.filterwarnings('ignore')
 from keras.regularizers import l2
 
 
@@ -95,7 +92,7 @@ class NNKeras:
             print('Test loss:', score[0])
             print('Test accuracy:', score[1])
 
-    def train_network_4(self, X, y):
+    def train_network_2(self, X, y):
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, random_state=5)
         for P in range(2, 12):
             for num_layers in range(1, 5):
