@@ -10,6 +10,7 @@ from utils import TimeSummary
 from utils import plot_training_summary
 from keras.models import load_model
 from keras.regularizers import l2
+import time
 
 
 class NNKeras:
@@ -38,10 +39,9 @@ class NNKeras:
     def base_model(self, nodes, num_output=31, kernel_regularizer=None):
         model = Sequential()
         for prev_node, node in zip(nodes[:-1], nodes[1:]):
-            # model.add(Dense(node, activation='relu', input_dim=prev_node))
-            self.layer_names.append('features_' + str(node))
+            print("nodes_{}_{}".format(prev_node, node))
             model.add(Dense(node, activation='relu', kernel_regularizer=kernel_regularizer,
-                            input_dim=prev_node, name='features_' + str(node)))
+                            input_dim=prev_node))
         model.add(Dense(num_output, activation='sigmoid', name='features'))
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
         return model
@@ -102,14 +102,14 @@ class NNKeras:
     def train_network_2(self, X, y):
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, random_state=5)
         for P in range(2, 12):
-            for num_layers in range(1, 5):
+            for num_layers in range(1, 2):
                 nodes = [64] + [int(P / 2)] * num_layers
+                print(nodes)
                 model = self.base_model(nodes)
                 summary = model.fit(X_train, y_train, epochs=10, verbose=0)
                 score = model.evaluate(X_test, y_test)
                 print('Test loss:', score[0])
                 print('Test accuracy:', score[1])
-                print('Nodes:', P)
 
     def single_output_score(self, X, y):
         total_score = 0
@@ -136,7 +136,6 @@ class NNKeras:
                 print(classes[0].values[prediction])
                 if i > num_lines:
                     break
-
 
 # nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset1.csv")
 # X, y, classes = nn.read_data()
