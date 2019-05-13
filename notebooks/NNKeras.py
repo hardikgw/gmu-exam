@@ -37,10 +37,9 @@ class NNKeras:
 
     def base_model(self, nodes, num_output=31, kernel_regularizer=None, layer_id=None):
         model = Sequential()
+        layer_name = None
         for prev_node, node in zip(nodes[:-1], nodes[1:]):
-            layer_name = None
-            if layer_id is not None:
-                layer_name = "{}-in-{}-n-{}".format(layer_id, str(prev_node), str(prev_node))
+            layer_name = "{}-in-{}-n-{}".format(layer_id, str(prev_node), str(prev_node))
             model.add(Dense(node, activation='relu', kernel_regularizer=kernel_regularizer,
                             input_dim=prev_node, name=layer_name))
         model.add(Dense(num_output, activation='sigmoid', name='features'))
@@ -104,6 +103,7 @@ class NNKeras:
         for num_layers in range(1, 10):
             nodes = [64] + [int(P / 2)] * num_layers
             model = self.base_model(nodes)
+            print(model.summary())
             summary = model.fit(X_train, y_train, epochs=10, verbose=0)
             score = model.evaluate(X_test, y_test)
             print('Test loss:', score[0])
@@ -116,6 +116,7 @@ class NNKeras:
                 nodes = [64] + [int(P / 2)] * num_layers
                 print(nodes)
                 model = self.base_model(nodes)
+                print(model.summary())
                 summary = model.fit(X_train, y_train, epochs=10, verbose=0)
                 score = model.evaluate(X_test, y_test)
                 print('Test loss:', score[0])
@@ -146,7 +147,6 @@ class NNKeras:
                 print(classes[0].values[prediction])
                 if i > num_lines:
                     break
-
 
 # nn = NNKeras("/Users/hp/workbench/projects/gmu/neural-network-poc/data/dataset/dataset1.csv")
 # X, y, classes = nn.read_data()
