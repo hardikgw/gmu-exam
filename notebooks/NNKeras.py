@@ -50,6 +50,7 @@ class NNKeras:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=5)
         nodes = [64, 6]
         model = self.base_model(nodes)
+        print(model.summary())
         summary = model.fit(X_train, y_train, epochs=10, verbose=0)
         score = model.evaluate(X_test, y_test)
         if show_summary:
