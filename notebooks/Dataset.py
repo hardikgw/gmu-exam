@@ -1,5 +1,5 @@
 import os
-
+import random
 
 class Dataset:
     def __init__(self, path: str, directory: str):
@@ -93,11 +93,17 @@ class Dataset:
                     ctr += 1
         pass
 
+    def shuffle_file(self, source, dest):
+        lines = open(os.path.join(self._path, self._directory, source)).readlines()
+        random.shuffle(lines)
+        open(os.path.join(self._path, self._directory, dest), 'w').writelines(lines)
+
 
 db = Dataset("/Users/hp/workbench/projects/gmu/neural-network-poc/data/", "dataset")
 # db.fix_by_vector_size(64)  # Reads file with ignoring new line char concatenating elements specified as vector_size
 # db.split("fix") # Splits number of lines defined in constant self._split_len into new folder called split from specified folder as parameter from current folder
 # db.split_by_percent("fix")
 # db.join("fix")
-db.join()
+# db.join()
 # db.join_by_vector_size(64)
+db.shuffle_file("dataset_full_seq.csv", "dataset_full_rnd.csv")

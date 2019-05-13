@@ -27,7 +27,7 @@ class NNKeras:
         X = df.iloc[:, 1:].astype(float)
         classes = df.iloc[:, 0]
         unique_classes = pd.DataFrame(classes.unique())
-        rows = X.shape[0]
+        rows = X.shape[.0]
         unique_classes['indices'] = range(1, len(unique_classes) + 1)
         y = np.zeros((rows, len(unique_classes)), np.bool)
         for i in range(rows):
